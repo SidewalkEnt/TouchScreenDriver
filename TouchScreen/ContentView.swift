@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var statusMessage: String = ""
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text(statusMessage)
+                .font(.title)
+                .foregroundColor(.green)
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
+        .onReceive(TouchHIDMonitor.shared.$logMessage) { msg in
+            statusMessage = msg
+        }
     }
-}
-
-#Preview {
-    ContentView()
 }

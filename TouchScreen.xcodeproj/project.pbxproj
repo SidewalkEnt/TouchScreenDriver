@@ -6,33 +6,128 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2A2C5A052DA79A1B007DF98E /* DriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A8753F12DA647FA009763AB /* DriverKit.framework */; };
+		2A2C5A082DA79A1C007DF98E /* HIDDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A26E90E2DA792B2003A859C /* HIDDriverKit.framework */; };
+		2A8753FB2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2AE8CC5E2DACFCD2005D6208 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AE8CC5D2DACFCD2005D6208 /* IOKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2A8753F92DA647FA009763AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A94C3462DA4FE6700D31E16 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2A8753EE2DA647FA009763AB;
+			remoteInfo = TouchScreenExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2A8753E52DA6417E009763AB /* Embed System Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(SYSTEM_EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				2A8753FB2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext in Embed System Extensions */,
+			);
+			name = "Embed System Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2AD44FE02DA63E0D00BF9CAB /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		2A26E90E2DA792B2003A859C /* HIDDriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HIDDriverKit.framework; path = Platforms/DriverKit.platform/Developer/SDKs/DriverKit24.4.sdk/System/DriverKit/System/Library/Frameworks/HIDDriverKit.framework; sourceTree = DEVELOPER_DIR; };
+		2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext */ = {isa = PBXFileReference; explicitFileType = "wrapper.driver-extension"; includeInIndex = 0; path = "com.naver.heejoo-byun.TouchScreen.driver.dext"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A8753F12DA647FA009763AB /* DriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DriverKit.framework; path = System/Library/Frameworks/DriverKit.framework; sourceTree = SDKROOT; };
 		2A94C34E2DA4FE6700D31E16 /* TouchScreen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchScreen.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2AE8CC5D2DACFCD2005D6208 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2A8753FF2DA647FA009763AB /* Exceptions for "TouchScreenExtension" folder in "TouchScreenExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2A8753EE2DA647FA009763AB /* TouchScreenExtension */;
+		};
+		2A94C3652DA5008800D31E16 /* Exceptions for "TouchScreen" folder in "TouchScreen" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2A94C34D2DA4FE6700D31E16 /* TouchScreen */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		2A8753F32DA647FA009763AB /* TouchScreenExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2A8753FF2DA647FA009763AB /* Exceptions for "TouchScreenExtension" folder in "TouchScreenExtension" target */,
+			);
+			path = TouchScreenExtension;
+			sourceTree = "<group>";
+		};
 		2A94C3502DA4FE6700D31E16 /* TouchScreen */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2A94C3652DA5008800D31E16 /* Exceptions for "TouchScreen" folder in "TouchScreen" target */,
+			);
 			path = TouchScreen;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2A8753EC2DA647FA009763AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A2C5A052DA79A1B007DF98E /* DriverKit.framework in Frameworks */,
+				2A2C5A082DA79A1C007DF98E /* HIDDriverKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2A94C34B2DA4FE6700D31E16 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AE8CC5E2DACFCD2005D6208 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A8753F02DA647FA009763AB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2AE8CC5D2DACFCD2005D6208 /* IOKit.framework */,
+				2A26E90E2DA792B2003A859C /* HIDDriverKit.framework */,
+				2A8753F12DA647FA009763AB /* DriverKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		2A94C3452DA4FE6700D31E16 = {
 			isa = PBXGroup;
 			children = (
 				2A94C3502DA4FE6700D31E16 /* TouchScreen */,
+				2A8753F32DA647FA009763AB /* TouchScreenExtension */,
+				2A8753F02DA647FA009763AB /* Frameworks */,
 				2A94C34F2DA4FE6700D31E16 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,13 +136,47 @@
 			isa = PBXGroup;
 			children = (
 				2A94C34E2DA4FE6700D31E16 /* TouchScreen.app */,
+				2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		2A8753EA2DA647FA009763AB /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		2A8753EE2DA647FA009763AB /* TouchScreenExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2A8753FC2DA647FA009763AB /* Build configuration list for PBXNativeTarget "TouchScreenExtension" */;
+			buildPhases = (
+				2A8753EA2DA647FA009763AB /* Headers */,
+				2A8753EB2DA647FA009763AB /* Sources */,
+				2A8753EC2DA647FA009763AB /* Frameworks */,
+				2A8753ED2DA647FA009763AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2A8753F32DA647FA009763AB /* TouchScreenExtension */,
+			);
+			name = TouchScreenExtension;
+			packageProductDependencies = (
+			);
+			productName = TouchScreenExtension;
+			productReference = 2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext */;
+			productType = "com.apple.product-type.driver-extension";
+		};
 		2A94C34D2DA4FE6700D31E16 /* TouchScreen */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2A94C35D2DA4FE6800D31E16 /* Build configuration list for PBXNativeTarget "TouchScreen" */;
@@ -55,10 +184,13 @@
 				2A94C34A2DA4FE6700D31E16 /* Sources */,
 				2A94C34B2DA4FE6700D31E16 /* Frameworks */,
 				2A94C34C2DA4FE6700D31E16 /* Resources */,
+				2AD44FE02DA63E0D00BF9CAB /* Embed ExtensionKit Extensions */,
+				2A8753E52DA6417E009763AB /* Embed System Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2A8753FA2DA647FA009763AB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				2A94C3502DA4FE6700D31E16 /* TouchScreen */,
@@ -78,10 +210,15 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1630;
 				TargetAttributes = {
+					2A8753EE2DA647FA009763AB = {
+						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1630;
+					};
 					2A94C34D2DA4FE6700D31E16 = {
 						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
 					};
 				};
 			};
@@ -100,11 +237,19 @@
 			projectRoot = "";
 			targets = (
 				2A94C34D2DA4FE6700D31E16 /* TouchScreen */,
+				2A8753EE2DA647FA009763AB /* TouchScreenExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2A8753ED2DA647FA009763AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2A94C34C2DA4FE6700D31E16 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,6 +260,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2A8753EB2DA647FA009763AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2A94C34A2DA4FE6700D31E16 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,7 +276,71 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2A8753FA2DA647FA009763AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2A8753EE2DA647FA009763AB /* TouchScreenExtension */;
+			targetProxy = 2A8753F92DA647FA009763AB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		2A8753FD2DA647FA009763AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = TouchScreenExtension/TouchScreenExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DRIVERKIT_DEPLOYMENT_TARGET = 24.2;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/System/DriverKit/System/Library/Frameworks",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TouchScreenExtension/Info.plist;
+				INFOPLIST_KEY_OSBundleUsageDescription = "";
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.naver.heejoo-byun.TouchScreen.driver";
+				PRODUCT_NAME = "$(inherited)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = driverkit;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "TouchScreenExtension/TouchScreenExtension-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		2A8753FE2DA647FA009763AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = TouchScreenExtension/TouchScreenExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DRIVERKIT_DEPLOYMENT_TARGET = 24.2;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/System/DriverKit/System/Library/Frameworks",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TouchScreenExtension/Info.plist;
+				INFOPLIST_KEY_OSBundleUsageDescription = "";
+				MARKETING_VERSION = 2.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.naver.heejoo-byun.TouchScreen.driver";
+				PRODUCT_NAME = "$(inherited)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = driverkit;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "TouchScreenExtension/TouchScreenExtension-Bridging-Header.h";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
 		2A94C35B2DA4FE6800D31E16 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -159,7 +375,10 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 4B47QL89TQ;
+				DRIVERKIT_DEPLOYMENT_TARGET = 24.0;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -222,7 +441,10 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 4B47QL89TQ;
+				DRIVERKIT_DEPLOYMENT_TARGET = 24.0;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -248,24 +470,29 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TouchScreen/TouchScreen.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 37;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"TouchScreen/Preview Content\"";
-				DEVELOPMENT_TEAM = 4B47QL89TQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = TouchScreen/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.naver.heejoo-byun.TouchScreen";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -275,23 +502,27 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TouchScreen/TouchScreen.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 37;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"TouchScreen/Preview Content\"";
-				DEVELOPMENT_TEAM = 4B47QL89TQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = TouchScreen/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.naver.heejoo-byun.TouchScreen";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -300,6 +531,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2A8753FC2DA647FA009763AB /* Build configuration list for PBXNativeTarget "TouchScreenExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A8753FD2DA647FA009763AB /* Debug */,
+				2A8753FE2DA647FA009763AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2A94C3492DA4FE6700D31E16 /* Build configuration list for PBXProject "TouchScreen" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

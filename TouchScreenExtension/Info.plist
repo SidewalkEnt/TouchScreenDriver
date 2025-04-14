@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IOKitPersonalities</key>
+	<dict>
+		<key>TouchScreenExtension</key>
+		<dict>
+			<key>IOUserServerOneProcess</key>
+			<true/>
+			<key>CFBundleIdentifier</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>IOClass</key>
+			<string>AppleUserHIDDevice</string>
+			<key>IOProviderClass</key>
+			<string>IOUSBHostInterface</string>
+			<key>IOUserClass</key>
+			<string>TouchScreenExtension</string>
+			<key>IOUserServerName</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>ProductID</key>
+			<integer>21781</integer>
+			<key>VendorID</key>
+			<integer>1267</integer>
+			<key>Transport</key>
+			<string>USB</string>
+			<key>PrimaryUsagePage</key>
+			<integer>13</integer>
+			<key>PrimaryUsage</key>
+			<integer>4</integer>
+		</dict>
+	</dict>
+</dict>
+</plist>

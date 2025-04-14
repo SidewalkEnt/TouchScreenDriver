@@ -1,0 +1,37 @@
+//
+//  TouchScreenExtension.iig
+//  TouchScreenExtension
+//
+//  Created by 변희주 on 4/14/25.
+//
+
+#ifndef TouchScreenExtension_h
+#define TouchScreenExtension_h
+
+//#include <Availability.h>
+//#include <DriverKit/IOService.iig>
+//#include <NetworkingDriverKit/IOUserNetworkEthernet.iig>
+//
+//class TouchScreenExtension: public IOUserNetworkEthernet
+//{
+//public:
+//    virtual bool init() override;
+//    virtual void free() override;
+//    virtual kern_return_t
+//    Start(IOService * provider) override;
+//};
+
+#include <DriverKit/IOService.iig>
+#include <HIDDriverKit/IOUserUSBHostHIDDevice.iig>
+
+class TouchScreenExtension: public IOUserUSBHostHIDDevice
+{
+public:
+    virtual bool init() override;
+    virtual void free() override;
+    
+    virtual kern_return_t
+    Start(IOService * provider) override;
+};
+
+#endif /* TouchScreenExtension_h */
