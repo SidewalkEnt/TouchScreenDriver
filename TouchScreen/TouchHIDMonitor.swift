@@ -12,18 +12,14 @@ import IOKit.hid
 final class TouchHIDMonitor: NSObject, ObservableObject {
     static let shared = TouchHIDMonitor()
     @Published var logMessage: String = "zz"
-    var lastGesture: String = "No gesture detected yet"
-
-    private var manager: IOHIDManager!
-    private let targetVendorID = 10176
+    var currentX: CGFloat?
+    var currentY: CGFloat?
     
-    private var currentX: Int?
-    private var currentY: Int?
-    private var gestureRecognizer = TouchGestureRecognizer()
+    private var manager: IOHIDManager!
+    private let targetVendorID = 1267
 
     func start() {
         activateDriverExtension()
-        gestureInit()
     }
 
     private func activateDriverExtension() {
@@ -33,50 +29,13 @@ final class TouchHIDMonitor: NSObject, ObservableObject {
         request.delegate = self
         OSSystemExtensionManager.shared.submitRequest(request)
     }
-
-    private func gestureInit() {
-        gestureRecognizer.onGestureDetected = { [weak self] gesture in
-            DispatchQueue.main.async {
-                switch gesture {
-                case .tap:
-                    self?.lastGesture = "👆 Tap detected"
-                    TouchHIDMonitor.shared.logMessage = "👆 Tap detected"
-                    
-                case .doubleTap:
-                    self?.lastGesture = "👆👆 Double Tap detected"
-                    TouchHIDMonitor.shared.logMessage = "👆👆 Double Tap detected"
-                    
-                case .drag(let startX, let startY, let endX, let endY):
-                    self?.lastGesture = "✋ Drag from (\(startX),\(startY)) to (\(endX),\(endY))"
-                    TouchHIDMonitor.shared.logMessage = "✋ Drag from (\(startX),\(startY)) to (\(endX),\(endY))"
-                    
-                case .swipeLeft:
-                    self?.lastGesture = "👈 Swipe Left"
-                    TouchHIDMonitor.shared.logMessage =  "👈 Swipe Left"
-
-                case .swipeRight:
-                    self?.lastGesture = "👉 Swipe Right"
-                    TouchHIDMonitor.shared.logMessage = "👉 Swipe Right"
-
-                case .swipeUp:
-                    self?.lastGesture = "👆 Swipe Up"
-                    TouchHIDMonitor.shared.logMessage = "👆 Swipe Up"
-
-                case .swipeDown:
-                    self?.lastGesture = "👇 Swipe Down"
-                    TouchHIDMonitor.shared.logMessage = "👇 Swipe Down"
-
-                }
-            }
-        }
-    }
     
     private func initializeHIDManager() {
         manager = IOHIDManagerCreate(kCFAllocatorDefault, IOOptionBits(kIOHIDOptionsTypeNone))
         IOHIDManagerSetDeviceMatching(manager, nil)
         IOHIDManagerScheduleWithRunLoop(manager, CFRunLoopGetCurrent(), CFRunLoopMode.defaultMode.rawValue)
         let result = IOHIDManagerOpen(manager, IOOptionBits(kIOHIDOptionsTypeNone))
-
+        
         if result != kIOReturnSuccess {
             logMessage = "❌ IOHIDManagerOpen failed with code: \(String(format: "0x%X", result))"
             return
@@ -94,45 +53,76 @@ final class TouchHIDMonitor: NSObject, ObservableObject {
             if vendorID == targetVendorID && usagePage == kHIDPage_Digitizer && usage == kHIDUsage_Dig_TouchScreen {
                 logMessage = "✅ Found touchscreen device: VendorID=\(vendorID)"
                 
-                IOHIDDeviceRegisterInputValueCallback(device, { context, result, sender, value in
-                    let element = IOHIDValueGetElement(value)
-                    let usage = IOHIDElementGetUsage(element)
-                    let usagePage = IOHIDElementGetUsagePage(element)
-                    let intValue = IOHIDValueGetIntegerValue(value)
-                    
-                    let monitor = TouchHIDMonitor.shared
-                    
-                    // 터치 상태 (누르기/떼기)
-                    if usagePage == kHIDPage_Digitizer && usage == kHIDUsage_Dig_TipSwitch {
-                        let isTouching = intValue == 1
+                let context = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+                IOHIDDeviceRegisterInputValueCallback(device, inputCallback, context)
 
-                        if isTouching && monitor.currentX == nil {
-                            monitor.currentX = 0
-                            monitor.currentY = 0
-                        }
-                        
-                        monitor.gestureRecognizer.processTouchEvent(
-                            isTouching: isTouching,
-                            x: monitor.currentX,
-                            y: monitor.currentY
-                        )
-                    }
-                }, nil)
             }
         }
     }
-    
-    func stopMonitoring() {
-        if manager != nil {
-            IOHIDManagerClose(manager, IOOptionBits(kIOHIDOptionsTypeNone))
-            IOHIDManagerUnscheduleFromRunLoop(manager, CFRunLoopGetCurrent(), CFRunLoopMode.defaultMode.rawValue)
-            manager = nil
+}
+
+private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, sender: UnsafeMutableRawPointer?, value: IOHIDValue) {
+    guard let context = context else { return }
+    let monitor = Unmanaged<TouchHIDMonitor>.fromOpaque(context).takeUnretainedValue()
+    let element = IOHIDValueGetElement(value)
+    let usage = IOHIDElementGetUsage(element)
+    let usagePage = IOHIDElementGetUsagePage(element)
+    let intValue = IOHIDValueGetIntegerValue(value)
+
+    if usagePage == kHIDPage_Digitizer {
+        if usage == kHIDUsage_Dig_TipSwitch {
+            DispatchQueue.main.async {
+                monitor.logMessage = intValue == 1 ? "📍Touch On" : "📍Touch Off"
+            }
         }
     }
-    
-    deinit {
-        stopMonitoring()
+
+    if usagePage == kHIDPage_GenericDesktop {
+        if usage == kHIDUsage_GD_X {
+            monitor.currentX = CGFloat(intValue)
+        }
+        
+        if usage == kHIDUsage_GD_Y {
+            monitor.currentY = CGFloat(intValue)
+        }
+        
+        if let xRaw = monitor.currentX, let yRaw = monitor.currentY {
+            let minX: CGFloat = 131_074
+            let maxX: CGFloat = 134_219_776
+            let minY: CGFloat = 131_074
+            let maxY: CGFloat = 88_081_728
+            
+            let screenWidth = CGFloat(CGDisplayPixelsWide(CGMainDisplayID()))
+            let screenHeight = CGFloat(CGDisplayPixelsHigh(CGMainDisplayID()))
+            
+            let normalizedX = (xRaw - minX) / (maxX - minX)
+            let normalizedY = (yRaw - minY) / (maxY - minY)
+            
+            let screenX = normalizedX * screenWidth
+            let screenY = normalizedY * screenHeight
+            
+            moveCursorToPosition(x: screenX, y: screenY)
+            
+            DispatchQueue.main.async {
+                monitor.logMessage = "📍Dragging"
+            }
+        }
     }
+}
+
+private func moveCursorToPosition(x: CGFloat, y: CGFloat) {
+    let screenWidth = CGDisplayPixelsWide(CGMainDisplayID())
+    let screenHeight = CGDisplayPixelsHigh(CGMainDisplayID())
+    
+    let boundedX = max(0, min(CGFloat(screenWidth), x))
+    let boundedY = max(0, min(CGFloat(screenHeight), y))
+    
+    let moveEvent = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState),
+                            mouseType: .mouseMoved,
+                            mouseCursorPosition: CGPoint(x: boundedX, y: boundedY),
+                            mouseButton: .left)
+    
+    moveEvent?.post(tap: .cghidEventTap)
 }
 
 extension TouchHIDMonitor: OSSystemExtensionRequestDelegate {
