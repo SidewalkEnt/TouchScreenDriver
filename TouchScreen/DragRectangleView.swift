@@ -1,5 +1,5 @@
 //
-//  DragOverlayView.swift
+//  DragRectangleView.swift
 //  TouchScreen
 //
 //  Created by 변희주 on 4/15/25.
@@ -7,10 +7,10 @@
 
 import Cocoa
 
-class DragPaintWindow: NSWindow {
+class DragRectangleWindow: NSWindow {
     init() {
-        let screenFrame = NSScreen.main?.frame ?? .zero
-        super.init(contentRect: screenFrame,
+        let frame = NSScreen.main?.frame ?? .zero
+        super.init(contentRect: frame,
                    styleMask: .borderless,
                    backing: .buffered,
                    defer: false)
@@ -19,37 +19,44 @@ class DragPaintWindow: NSWindow {
         self.backgroundColor = .clear
         self.ignoresMouseEvents = true
         self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        self.contentView = DragPaintView(frame: screenFrame)
+        self.contentView = DragRectangleView(frame: frame)
     }
 }
 
-class DragPaintView: NSView {
-    private var path = NSBezierPath()
-    
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-        self.wantsLayer = true
-        self.layer?.backgroundColor = NSColor.clear.cgColor
-        path.lineWidth = 30.0  // 브러시 크기
-        NSColor.systemBlue.setStroke()  // 칠할 색
-    }
-
-    required init?(coder decoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+class DragRectangleView: NSView {
+    private var startPoint: CGPoint?
+    private var currentPoint: CGPoint?
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        NSColor.systemBlue.setStroke()
-        path.stroke()
+        guard let start = startPoint, let current = currentPoint else { return }
+
+        let rect = CGRect(x: min(start.x, current.x),
+                          y: min(start.y, current.y),
+                          width: abs(start.x - current.x),
+                          height: abs(start.y - current.y))
+
+        NSColor.systemBlue.withAlphaComponent(0.3).setFill()
+        NSBezierPath(rect: rect).fill()
+
+        NSColor.systemBlue.withAlphaComponent(0.8).setStroke()
+        NSBezierPath(rect: rect).stroke()
     }
 
-    func addPoint(_ point: CGPoint) {
-        if path.isEmpty {
-            path.move(to: point)
-        } else {
-            path.line(to: point)
-        }
+    func begin(at point: CGPoint) {
+        startPoint = point
+        currentPoint = point
+        needsDisplay = true
+    }
+
+    func update(to point: CGPoint) {
+        currentPoint = point
+        needsDisplay = true
+    }
+
+    func clear() {
+        startPoint = nil
+        currentPoint = nil
         needsDisplay = true
     }
 }

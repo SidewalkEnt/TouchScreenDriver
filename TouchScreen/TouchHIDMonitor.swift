@@ -10,10 +10,20 @@ import SystemExtensions
 import IOKit.hid
 
 final class TouchHIDMonitor: NSObject, ObservableObject {
+    
     static let shared = TouchHIDMonitor()
+    
     @Published var logMessage: String = "zz"
+    
     var currentX: CGFloat?
     var currentY: CGFloat?
+    
+    var minX: CGFloat?
+    var maxX: CGFloat?
+    var minY: CGFloat?
+    var maxY: CGFloat?
+    
+    var didBeginDrag: Bool = false
     
     private var manager: IOHIDManager!
     private let targetVendorID = 1267
@@ -72,7 +82,16 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
     if usagePage == kHIDPage_Digitizer {
         if usage == kHIDUsage_Dig_TipSwitch {
             DispatchQueue.main.async {
-                monitor.logMessage = intValue == 1 ? "📍Touch On" : "📍Touch Off"
+                if intValue == 1 {
+                    monitor.logMessage = "📍Touch On"
+                    monitor.didBeginDrag = false
+                } else {
+                    monitor.currentX = nil
+                    monitor.currentY = nil
+                    monitor.logMessage = "📍Touch Off"
+                    monitor.didBeginDrag = false
+                    DragRectangleController.shared.endDrag()
+                }
             }
         }
     }
@@ -100,11 +119,19 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
             
             let screenX = normalizedX * screenWidth
             let screenY = normalizedY * screenHeight
-            
+            let flippedY = screenHeight - screenY
+            let point = CGPoint(x: screenX, y: flippedY)
+
             moveCursorToPosition(x: screenX, y: screenY)
             
             DispatchQueue.main.async {
-                monitor.logMessage = "📍Dragging"
+                if monitor.didBeginDrag == false {
+                    DragRectangleController.shared.beginDrag(at: point)
+                    monitor.didBeginDrag = true
+                } else {
+                    DragRectangleController.shared.updateDrag(to: point)
+                }
+                monitor.logMessage = "📍Touch at (X: \(Int(screenX)), Y: \(Int(screenY)))"
             }
         }
     }
