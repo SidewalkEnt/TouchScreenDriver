@@ -18,10 +18,10 @@ final class TouchHIDMonitor: NSObject, ObservableObject {
     var currentX: CGFloat?
     var currentY: CGFloat?
     
-    var minX: CGFloat?
-    var maxX: CGFloat?
-    var minY: CGFloat?
-    var maxY: CGFloat?
+    var minX: CGFloat = 0.0
+    var maxX: CGFloat = 0.0
+    var minY: CGFloat = 0.0
+    var maxY: CGFloat = 0.0
     
     var didBeginDrag: Bool = false
     
@@ -78,12 +78,16 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
     let usage = IOHIDElementGetUsage(element)
     let usagePage = IOHIDElementGetUsagePage(element)
     let intValue = IOHIDValueGetIntegerValue(value)
-
+            
     if usagePage == kHIDPage_Digitizer {
         if usage == kHIDUsage_Dig_TipSwitch {
             DispatchQueue.main.async {
                 if intValue == 1 {
-                    monitor.logMessage = "📍Touch On"
+                    if let x = monitor.currentX, let y = monitor.currentY {
+                        convertPosition(xRaw: x, yRaw: y)
+                    } else {
+                        monitor.logMessage = "📍Touch On"
+                    }
                     monitor.didBeginDrag = false
                 } else {
                     monitor.currentX = nil
@@ -98,55 +102,58 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
 
     if usagePage == kHIDPage_GenericDesktop {
         if usage == kHIDUsage_GD_X {
-            monitor.currentX = CGFloat(intValue)
+            monitor.currentX = CGFloat((intValue >> 16) & 0xFFFF)
+            monitor.minX = CGFloat(IOHIDElementGetLogicalMin(element))
+            monitor.maxX = CGFloat(IOHIDElementGetLogicalMax(element))
         }
         
         if usage == kHIDUsage_GD_Y {
-            monitor.currentY = CGFloat(intValue)
+            monitor.currentY = CGFloat((intValue >> 16) & 0xFFFF)
+            monitor.minY = CGFloat(IOHIDElementGetLogicalMin(element))
+            monitor.maxY = CGFloat(IOHIDElementGetLogicalMax(element))
         }
         
-        if let xRaw = monitor.currentX, let yRaw = monitor.currentY {
-            let minX: CGFloat = 131_074
-            let maxX: CGFloat = 134_219_776
-            let minY: CGFloat = 131_074
-            let maxY: CGFloat = 88_081_728
-            
-            let screenWidth = CGFloat(CGDisplayPixelsWide(CGMainDisplayID()))
-            let screenHeight = CGFloat(CGDisplayPixelsHigh(CGMainDisplayID()))
-            
-            let normalizedX = (xRaw - minX) / (maxX - minX)
-            let normalizedY = (yRaw - minY) / (maxY - minY)
-            
-            let screenX = normalizedX * screenWidth
-            let screenY = normalizedY * screenHeight
-            let flippedY = screenHeight - screenY
-            let point = CGPoint(x: screenX, y: flippedY)
-
-            moveCursorToPosition(x: screenX, y: screenY)
-            
-            DispatchQueue.main.async {
-                if monitor.didBeginDrag == false {
-                    DragRectangleController.shared.beginDrag(at: point)
-                    monitor.didBeginDrag = true
-                } else {
-                    DragRectangleController.shared.updateDrag(to: point)
-                }
-                monitor.logMessage = "📍Touch at (X: \(Int(screenX)), Y: \(Int(screenY)))"
-            }
+        if let x = monitor.currentX, let y = monitor.currentY {
+            convertPosition(xRaw: x, yRaw: y)
         }
     }
 }
 
+private func convertPosition(xRaw: CGFloat, yRaw: CGFloat) {
+    let monitor = TouchHIDMonitor.shared
+    
+    let screenWidth = CGFloat(CGDisplayPixelsWide(CGMainDisplayID()))
+    let screenHeight = CGFloat(CGDisplayPixelsHigh(CGMainDisplayID()))
+    
+    let normalizedX = (xRaw - monitor.minX) / (monitor.maxX - monitor.minX)
+    let normalizedY = (yRaw - monitor.minY) / (monitor.maxY - monitor.minY)
+    
+    let screenX = normalizedX * screenWidth
+    let screenY = normalizedY * screenHeight
+    
+    let boundedX = max(0, min(CGFloat(screenWidth), screenX))
+    let boundedY = max(0, min(CGFloat(screenHeight), screenY))
+    
+    moveCursorToPosition(x: boundedX, y: boundedY)
+    
+    DispatchQueue.main.async {
+        let flippedY = screenHeight - screenY
+        let point = CGPoint(x: screenX, y: flippedY)
+        
+        if monitor.didBeginDrag == false {
+            DragRectangleController.shared.beginDrag(at: point)
+            monitor.didBeginDrag = true
+        } else {
+            DragRectangleController.shared.updateDrag(to: point)
+        }
+        monitor.logMessage = "📍Touch at (X: \(Int(boundedX)), Y: \(Int(boundedY)))"
+    }
+}
+
 private func moveCursorToPosition(x: CGFloat, y: CGFloat) {
-    let screenWidth = CGDisplayPixelsWide(CGMainDisplayID())
-    let screenHeight = CGDisplayPixelsHigh(CGMainDisplayID())
-    
-    let boundedX = max(0, min(CGFloat(screenWidth), x))
-    let boundedY = max(0, min(CGFloat(screenHeight), y))
-    
     let moveEvent = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState),
                             mouseType: .mouseMoved,
-                            mouseCursorPosition: CGPoint(x: boundedX, y: boundedY),
+                            mouseCursorPosition: CGPoint(x: x, y: y),
                             mouseButton: .left)
     
     moveEvent?.post(tap: .cghidEventTap)
