@@ -84,7 +84,7 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
             DispatchQueue.main.async {
                 if intValue == 1 {
                     if let x = monitor.currentX, let y = monitor.currentY {
-                        convertPosition(xRaw: x, yRaw: y)
+                        onClickEvent(x: x, y: y)
                     } else {
                         monitor.logMessage = "📍Touch On"
                     }
@@ -153,6 +153,15 @@ private func convertPosition(xRaw: CGFloat, yRaw: CGFloat) {
 private func moveCursorToPosition(x: CGFloat, y: CGFloat) {
     let moveEvent = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState),
                             mouseType: .mouseMoved,
+                            mouseCursorPosition: CGPoint(x: x, y: y),
+                            mouseButton: .left)
+    
+    moveEvent?.post(tap: .cghidEventTap)
+}
+
+private func onClickEvent(x: CGFloat, y: CGFloat) {
+    let moveEvent = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState),
+                            mouseType: .leftMouseDown,
                             mouseCursorPosition: CGPoint(x: x, y: y),
                             mouseButton: .left)
     
