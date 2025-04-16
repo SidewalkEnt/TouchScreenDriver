@@ -22,9 +22,7 @@ final class TouchHIDMonitor: NSObject, ObservableObject {
     var maxX: CGFloat = 0.0
     var minY: CGFloat = 0.0
     var maxY: CGFloat = 0.0
-    
-    var didBeginDrag: Bool = false
-    
+        
     private var manager: IOHIDManager!
     private let targetVendorID = 1267
 
@@ -84,17 +82,19 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
             DispatchQueue.main.async {
                 if intValue == 1 {
                     if let x = monitor.currentX, let y = monitor.currentY {
-                        onClickEvent(x: x, y: y)
+                        let (convertedX, counvertedY) = convertPosition(xRaw: x, yRaw: y)
+                        onClickEvent(x: convertedX, y: counvertedY)
                     } else {
                         monitor.logMessage = "📍Touch On"
                     }
-                    monitor.didBeginDrag = false
                 } else {
+                    if let x = monitor.currentX, let y = monitor.currentY {
+                        let (convertedX, counvertedY) = convertPosition(xRaw: x, yRaw: y)
+                        onClickEndEvent(x: convertedX, y: counvertedY)
+                    }
                     monitor.currentX = nil
                     monitor.currentY = nil
                     monitor.logMessage = "📍Touch Off"
-                    monitor.didBeginDrag = false
-                    DragRectangleController.shared.endDrag()
                 }
             }
         }
@@ -114,12 +114,17 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
         }
         
         if let x = monitor.currentX, let y = monitor.currentY {
-            convertPosition(xRaw: x, yRaw: y)
+            let (convertedX, counvertedY) = convertPosition(xRaw: x, yRaw: y)
+            onDraggingEvent(x: convertedX, y: counvertedY)
+            
+            DispatchQueue.main.async {
+                monitor.logMessage = "📍Touch at (X: \(Int(convertedX)), Y: \(Int(counvertedY)))"
+            }
         }
     }
 }
 
-private func convertPosition(xRaw: CGFloat, yRaw: CGFloat) {
+private func convertPosition(xRaw: CGFloat, yRaw: CGFloat) -> (CGFloat, CGFloat) {
     let monitor = TouchHIDMonitor.shared
     
     let screenWidth = CGFloat(CGDisplayPixelsWide(CGMainDisplayID()))
@@ -134,25 +139,12 @@ private func convertPosition(xRaw: CGFloat, yRaw: CGFloat) {
     let boundedX = max(0, min(CGFloat(screenWidth), screenX))
     let boundedY = max(0, min(CGFloat(screenHeight), screenY))
     
-    moveCursorToPosition(x: boundedX, y: boundedY)
-    
-    DispatchQueue.main.async {
-        let flippedY = screenHeight - screenY
-        let point = CGPoint(x: screenX, y: flippedY)
-        
-        if monitor.didBeginDrag == false {
-            DragRectangleController.shared.beginDrag(at: point)
-            monitor.didBeginDrag = true
-        } else {
-            DragRectangleController.shared.updateDrag(to: point)
-        }
-        monitor.logMessage = "📍Touch at (X: \(Int(boundedX)), Y: \(Int(boundedY)))"
-    }
+    return (boundedX, boundedY)
 }
 
-private func moveCursorToPosition(x: CGFloat, y: CGFloat) {
+private func onDraggingEvent(x: CGFloat, y: CGFloat) {
     let moveEvent = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState),
-                            mouseType: .mouseMoved,
+                            mouseType: .leftMouseDragged,
                             mouseCursorPosition: CGPoint(x: x, y: y),
                             mouseButton: .left)
     
@@ -160,12 +152,17 @@ private func moveCursorToPosition(x: CGFloat, y: CGFloat) {
 }
 
 private func onClickEvent(x: CGFloat, y: CGFloat) {
-    let moveEvent = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState),
-                            mouseType: .leftMouseDown,
-                            mouseCursorPosition: CGPoint(x: x, y: y),
-                            mouseButton: .left)
-    
-    moveEvent?.post(tap: .cghidEventTap)
+    CGEvent(mouseEventSource: nil,
+            mouseType: CGEventType.leftMouseDown,
+            mouseCursorPosition: CGPoint(x: x, y: y),
+            mouseButton: .left)?.post(tap: CGEventTapLocation.cghidEventTap)
+}
+
+private func onClickEndEvent(x: CGFloat, y: CGFloat) {
+    CGEvent(mouseEventSource: nil,
+            mouseType: CGEventType.leftMouseUp,
+            mouseCursorPosition: CGPoint(x: x, y: y),
+            mouseButton: .left)?.post(tap: CGEventTapLocation.cghidEventTap)
 }
 
 extension TouchHIDMonitor: OSSystemExtensionRequestDelegate {
