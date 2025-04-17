@@ -13,7 +13,7 @@ final class TouchHIDMonitor: NSObject, ObservableObject {
     
     static let shared = TouchHIDMonitor()
     
-    @Published var logMessage: String = "zz"
+    @Published var logMessage: String = "aa"
     
     var currentX: CGFloat?
     var currentY: CGFloat?
