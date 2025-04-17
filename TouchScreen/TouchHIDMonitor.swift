@@ -143,24 +143,31 @@ private func convertPosition(xRaw: CGFloat, yRaw: CGFloat) -> (CGFloat, CGFloat)
 }
 
 private func onDraggingEvent(x: CGFloat, y: CGFloat) {
-    let moveEvent = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState),
-                            mouseType: .leftMouseDragged,
-                            mouseCursorPosition: CGPoint(x: x, y: y),
-                            mouseButton: .left)
-    
-    moveEvent?.post(tap: .cghidEventTap)
+    CGEvent(mouseEventSource: nil,
+            mouseType: .leftMouseDragged,
+            mouseCursorPosition: CGPoint(x: x, y: y),
+            mouseButton: .left)?.post(tap: .cghidEventTap)
 }
+
+//private func onScrollEvent(x: CGFloat, y: CGFloat) {
+//    CGEvent(scrollWheelEvent2Source: nil,
+//            units: .pixel, // .line도 가능
+//            wheelCount: 2,
+//            wheel1: Int32(y), // 수직 스크롤
+//            wheel2: Int32(x), // 수평 스크롤
+//            wheel3: 0)?.post(tap: .cghidEventTap)
+//}
 
 private func onClickEvent(x: CGFloat, y: CGFloat) {
     CGEvent(mouseEventSource: nil,
-            mouseType: CGEventType.leftMouseDown,
+            mouseType: .leftMouseDown,
             mouseCursorPosition: CGPoint(x: x, y: y),
             mouseButton: .left)?.post(tap: CGEventTapLocation.cghidEventTap)
 }
 
 private func onClickEndEvent(x: CGFloat, y: CGFloat) {
     CGEvent(mouseEventSource: nil,
-            mouseType: CGEventType.leftMouseUp,
+            mouseType: .leftMouseUp,
             mouseCursorPosition: CGPoint(x: x, y: y),
             mouseButton: .left)?.post(tap: CGEventTapLocation.cghidEventTap)
 }
