@@ -3,10 +3,8 @@
 2. DriverKit 설치
 3. 프로젝트 빌드하지 말고 app으로 배포 (아카이브)
 4. 설치한 driver 사용 위해 system extension 권한 요청
-5. HIDManager 초기화
-6. IOHIDManagerOpen (연결된 HID open)
-7. vendorID로 원하는 HID 감지
-8. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
+5. HIDManager 초기화 & 연결된 HID open & vendorID로 원하는 HID 감지
+6. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
 
 
 ### 1.XCode 프로젝트 macOS로 생성
@@ -160,6 +158,12 @@
 * Frameworks 칸에 아래와 같이 .dext 파일이 들어가 있는 것 확인, 추가적으로 IOKit framework 설치
 ![스크린샷 2025-04-18 오후 2 34 42](https://github.com/user-attachments/assets/88d645c5-7798-476f-8287-78fb36042f95)
 
+* Signing & Capabilities 탭 누르고 +Capablility 버튼 누른 다음 System Extension 추가
+![스크린샷 2025-04-18 오후 3 00 55](https://github.com/user-attachments/assets/923bca4d-2727-43b4-8989-0be60ed93d5e)
+
+* 추가로 .entitlements 파일에 아래와 같이 Communicates with Drivers 추가 후 YES로 설정
+![스크린샷 2025-04-18 오후 3 03 00](https://github.com/user-attachments/assets/cc39b044-7f21-4a88-a481-a246bea47176)
+
 * Driver의 TARGETS도 확인 (DriverKit은 이미 추가되어 있으니 HIDDriverKit 설치)
 ![스크린샷 2025-04-18 오후 2 37 30](https://github.com/user-attachments/assets/a9e34728-9b1d-442c-a89d-716aa67908da)
 
@@ -229,4 +233,154 @@
    }
    ```
 
-### 5. HIDManager 초기화
+### 5. HIDManager 초기화 & 연결된 HID open & vendorID로 원하는 HID 감지
+    ```swift
+    private let targetVendorID = 1267 // 터치스크린의 vendorID
+
+    private func initializeHIDManager() {
+           manager = IOHIDManagerCreate(kCFAllocatorDefault, IOOptionBits(kIOHIDOptionsTypeNone))
+           IOHIDManagerSetDeviceMatching(manager, nil)
+           IOHIDManagerScheduleWithRunLoop(manager, CFRunLoopGetCurrent(), CFRunLoopMode.defaultMode.rawValue)
+           let result = IOHIDManagerOpen(manager, IOOptionBits(kIOHIDOptionsTypeNone)) // 연결된 HID open
+           
+           if result != kIOReturnSuccess {
+               logMessage = "❌ IOHIDManagerOpen failed with code: \(String(format: "0x%X", result))"
+               return
+           } else {
+               logMessage = "✅ IOHIDManagerOpen succeeded"
+           }
+           
+           guard let deviceSet = IOHIDManagerCopyDevices(manager) as? Set<IOHIDDevice> else { return }
+           
+           for device in deviceSet {
+               let vendorID = (IOHIDDeviceGetProperty(device, kIOHIDVendorIDKey as CFString) as? NSNumber)?.intValue ?? 0
+               let usagePage = (IOHIDDeviceGetProperty(device, kIOHIDPrimaryUsagePageKey as CFString) as? NSNumber)?.intValue ?? 0
+               let usage = (IOHIDDeviceGetProperty(device, kIOHIDPrimaryUsageKey as CFString) as? NSNumber)?.intValue ?? 0
+               
+               if vendorID == targetVendorID && usagePage == kHIDPage_Digitizer && usage == kHIDUsage_Dig_TouchScreen {
+                   logMessage = "✅ Found touchscreen device: VendorID=\(vendorID)"
+                   
+                   let context = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+                   IOHIDDeviceRegisterInputValueCallback(device, inputCallback, context) // inputCallback 함수는 이어서 작성 (이 함수에서 터치스크린의 이벤트를 받아와 처리)
+   
+               }
+           }
+       }
+    ```
+
+### 6. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
+    ```swift
+    private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, sender: UnsafeMutableRawPointer?, value: IOHIDValue) {
+        guard let context = context else { return }
+        let monitor = Unmanaged<TouchHIDMonitor>.fromOpaque(context).takeUnretainedValue()
+        let element = IOHIDValueGetElement(value)
+        let usage = IOHIDElementGetUsage(element)
+        let usagePage = IOHIDElementGetUsagePage(element)
+        let intValue = IOHIDValueGetIntegerValue(value)
+                
+        CGDisplayHideCursor(CGMainDisplayID()) // 포그라운드 상태일 때만 제대로 숨겨짐
+        
+        if usagePage == kHIDPage_Digitizer {
+            if usage == kHIDUsage_Dig_TipSwitch {
+                DispatchQueue.main.async {
+                    if intValue == 1 {
+                        if let x = monitor.currentX, let y = monitor.currentY {
+                            let (convertedX, counvertedY) = convertPosition(xRaw: x, yRaw: y)
+                            onClickEvent(x: convertedX, y: counvertedY)
+                        } else {
+                            monitor.logMessage = "📍Touch On"
+                        }
+                    } else {
+                        if let x = monitor.currentX, let y = monitor.currentY {
+                            let (convertedX, counvertedY) = convertPosition(xRaw: x, yRaw: y)
+                            onClickEndEvent(x: convertedX, y: counvertedY)
+                        }
+                        monitor.currentX = nil
+                        monitor.currentY = nil
+                        monitor.logMessage = "📍Touch Off"
+                    }
+                }
+            }
+        }
+    
+        if usagePage == kHIDPage_GenericDesktop {
+            if usage == kHIDUsage_GD_X {
+                monitor.currentX = CGFloat((intValue >> 16) & 0xFFFF)
+                monitor.minX = CGFloat(IOHIDElementGetLogicalMin(element))
+                monitor.maxX = CGFloat(IOHIDElementGetLogicalMax(element))
+            }
+            
+            if usage == kHIDUsage_GD_Y {
+                onScrollEvent(down: monitor.currentY ?? 0.0 > CGFloat((intValue >> 16) & 0xFFFF))
+    
+                monitor.currentY = CGFloat((intValue >> 16) & 0xFFFF)
+                monitor.minY = CGFloat(IOHIDElementGetLogicalMin(element))
+                monitor.maxY = CGFloat(IOHIDElementGetLogicalMax(element))
+            }
+            
+            if let x = monitor.currentX, let y = monitor.currentY {
+                let (convertedX, convertedY) = convertPosition(xRaw: x, yRaw: y)
+                onMoveEvent(x: convertedX, y: convertedY)
+                
+                DispatchQueue.main.async {
+                    monitor.logMessage = "📍Touch at (X: \(Int(convertedX)), Y: \(Int(convertedY)))"
+                }
+            }
+        }
+    }
+    
+    private func convertPosition(xRaw: CGFloat, yRaw: CGFloat) -> (CGFloat, CGFloat) {
+        let monitor = TouchHIDMonitor.shared
+        
+        let screenWidth = CGFloat(CGDisplayPixelsWide(CGMainDisplayID()))
+        let screenHeight = CGFloat(CGDisplayPixelsHigh(CGMainDisplayID()))
+        
+        let normalizedX = (xRaw - monitor.minX) / (monitor.maxX - monitor.minX)
+        let normalizedY = (yRaw - monitor.minY) / (monitor.maxY - monitor.minY)
+        
+        let screenX = normalizedX * screenWidth
+        let screenY = normalizedY * screenHeight
+        
+        let boundedX = max(0, min(CGFloat(screenWidth), screenX))
+        let boundedY = max(0, min(CGFloat(screenHeight), screenY))
+        
+        return (boundedX, boundedY)
+    }
+    
+    private func onDraggingEvent(x: CGFloat, y: CGFloat) {
+        CGEvent(mouseEventSource: nil,
+                mouseType: .leftMouseDragged,
+                mouseCursorPosition: CGPoint(x: x, y: y),
+                mouseButton: .left)?.post(tap: .cghidEventTap)
+    }
+    
+    private func onMoveEvent(x: CGFloat, y: CGFloat) {
+        CGEvent(mouseEventSource: nil,
+                mouseType: .mouseMoved,
+                mouseCursorPosition: CGPoint(x: x, y: y),
+                mouseButton: .left)?.post(tap: .cghidEventTap)
+    }
+    
+    private func onScrollEvent(down: Bool) {
+        CGEvent(scrollWheelEvent2Source: nil,
+                units: .pixel,
+                wheelCount: 2,
+                wheel1: Int32(down ? -35 : 35),
+                wheel2: Int32(0),
+                wheel3: 0)?.post(tap: .cghidEventTap)
+    }
+    
+    private func onClickEvent(x: CGFloat, y: CGFloat) {
+        CGEvent(mouseEventSource: nil,
+                mouseType: .leftMouseDown,
+                mouseCursorPosition: CGPoint(x: x, y: y),
+                mouseButton: .left)?.post(tap: .cghidEventTap)
+    }
+    
+    private func onClickEndEvent(x: CGFloat, y: CGFloat) {
+        CGEvent(mouseEventSource: nil,
+                mouseType: .leftMouseUp,
+                mouseCursorPosition: CGPoint(x: x, y: y),
+                mouseButton: .left)?.post(tap: .cghidEventTap)
+    }
+    ```
