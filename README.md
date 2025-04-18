@@ -26,6 +26,7 @@
 
   * 이렇게 설치를 하면 자동으로 3개의 파일이 생성 (.iig, .cpp, .plist)
   * .iig 파일을 아래와 같이 수정
+  
     ```c
     #ifndef TouchScreenExtension_h // 생성한 file이름_h
     #define TouchScreenExtension_h
@@ -44,8 +45,7 @@
 
     #endif /* TouchScreenExtension_h */
     ```
-
- *.cpp 파일을 아래와 같이 수정
+ * .cpp 파일을 아래와 같이 수정
 ```c
    #include "TouchScreenExtension.h" // 생성한 file이름.h
 
