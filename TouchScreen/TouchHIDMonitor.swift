@@ -110,6 +110,8 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
         }
         
         if usage == kHIDUsage_GD_Y {
+            onScrollEvent(down: monitor.currentY ?? 0.0 > CGFloat((intValue >> 16) & 0xFFFF))
+
             monitor.currentY = CGFloat((intValue >> 16) & 0xFFFF)
             monitor.minY = CGFloat(IOHIDElementGetLogicalMin(element))
             monitor.maxY = CGFloat(IOHIDElementGetLogicalMax(element))
@@ -151,14 +153,21 @@ private func onDraggingEvent(x: CGFloat, y: CGFloat) {
             mouseButton: .left)?.post(tap: .cghidEventTap)
 }
 
-//private func onScrollEvent(x: CGFloat, y: CGFloat) {
-//    CGEvent(scrollWheelEvent2Source: nil,
-//            units: .pixel, // .line도 가능
-//            wheelCount: 2,
-//            wheel1: Int32(y), // 수직 스크롤
-//            wheel2: Int32(x), // 수평 스크롤
-//            wheel3: 0)?.post(tap: .cghidEventTap)
-//}
+private func onMoveEvent(x: CGFloat, y: CGFloat) {
+    CGEvent(mouseEventSource: nil,
+            mouseType: .mouseMoved,
+            mouseCursorPosition: CGPoint(x: x, y: y),
+            mouseButton: .left)?.post(tap: .cghidEventTap)
+}
+
+private func onScrollEvent(down: Bool) {
+    CGEvent(scrollWheelEvent2Source: nil,
+            units: .pixel,
+            wheelCount: 2,
+            wheel1: Int32(down ? -35 : 35),
+            wheel2: Int32(0),
+            wheel3: 0)?.post(tap: .cghidEventTap)
+}
 
 private func onClickEvent(x: CGFloat, y: CGFloat) {
     CGEvent(mouseEventSource: nil,
