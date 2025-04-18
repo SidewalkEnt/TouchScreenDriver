@@ -27,5 +27,89 @@
   * 이렇게 설치를 하면 자동으로 3개의 파일이 생성 (.iig, .cpp, .plist)
   * .iig 파일을 아래와 같이 수정
     ```c
-      
+    #ifndef TouchScreenExtension_h // 생성한 file이름_h
+    #define TouchScreenExtension_h
+
+    #include <DriverKit/IOService.iig>
+    #include <HIDDriverKit/IOUserUSBHostHIDDevice.iig>
+
+    class TouchScreenExtension: public IOUserUSBHostHIDDevice {
+         public:
+         virtual bool init() override;
+         virtual void free() override;
+    
+    virtual kern_return_t
+    Start(IOService * provider) override;
+    };
+
+    #endif /* TouchScreenExtension_h */
+    ```
+
+ *.cpp 파일을 아래와 같이 수정
+    ```c
+   #include "TouchScreenExtension.h" // 생성한 file이름.h
+
+#include <os/log.h>
+#include <DriverKit/IOUserServer.h>
+#include <DriverKit/IOLib.h>
+#include <DriverKit/OSCollections.h>
+
+struct TouchScreenExtension_IVars // 생성한 file이름_IVars
+{
+    OSArray *elements;
+    
+    struct {
+        OSArray *collections;
+    } digitizer;
+};
+
+#define _elements   ivars->elements
+#define _digitizer  ivars->digitizer
+
+bool TouchScreenExtension::init()
+{
+    os_log(OS_LOG_DEFAULT, "TouchScreenExtension init");
+
+    if (!super::init()) {
+        return false;
+    }
+    
+    ivars = IONewZero(TouchScreenExtension_IVars, 1);
+    if (!ivars) {
+        return false;
+    }
+    
+exit:
+    return true;
+}
+
+void TouchScreenExtension::free()
+{
+    if (ivars) {
+        OSSafeReleaseNULL(_elements);
+        OSSafeReleaseNULL(_digitizer.collections);
+    }
+    
+    IOSafeDeleteNULL(ivars, TouchScreenExtension_IVars, 1);
+    super::free();
+}
+
+kern_return_t
+IMPL(TouchScreenExtension, Start)
+{
+    kern_return_t ret;
+    
+    ret = Start(provider, SUPERDISPATCH);
+    if (ret != kIOReturnSuccess) {
+        Stop(provider, SUPERDISPATCH);
+        return ret;
+    }
+
+    os_log(OS_LOG_DEFAULT, "Hello World");
+    
+    RegisterService();
+    
+    return ret;
+}
+
     ```
