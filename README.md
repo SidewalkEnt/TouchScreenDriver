@@ -7,11 +7,11 @@
 6. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
 
 
-## 1.XCode 프로젝트 macOS로 생성
+## 1. XCode 프로젝트 macOS로 생성
 ![스크린샷 2025-04-18 오후 12 33 24](https://github.com/user-attachments/assets/d4acfe8b-f931-4e88-9c3f-c65b7f91342f)
 
 
-## 2.DriverKit 설치
+## 2. DriverKit 설치
 * File -> New -> Target
 
 ![스크린샷 2025-04-18 오후 12 04 38](https://github.com/user-attachments/assets/4c0a6b77-a5e1-4705-92e2-c252dda07c88)
