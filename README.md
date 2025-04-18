@@ -34,7 +34,7 @@
     #include <DriverKit/IOService.iig>
     #include <HIDDriverKit/IOUserUSBHostHIDDevice.iig>
 
-    class TouchScreenExtension: public IOUserUSBHostHIDDevice {
+    class TouchScreenExtension: public IOUserUSBHostHIDDevice { // 생성할 클래스 이름
          public:
          virtual bool init() override;
          virtual void free() override;
@@ -112,3 +112,61 @@ IMPL(TouchScreenExtension, Start)
     return ret;
 }
 ```
+
+ * .plist 파일 sourceCode로 연다음, 아래 코드 참고하여 수정
+![스크린샷 2025-04-18 오후 2 30 10](https://github.com/user-attachments/assets/d85e6dce-6c07-4346-b2e5-a1b01eab0562) 
+
+    ```swift
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+   <plist version="1.0">
+   <dict>
+   	<key>IOKitPersonalities</key>
+   	<dict>
+   		<key>TouchScreenExtension</key> // 생성한 클래스 이름
+   		<dict>
+   			<key>CFBundleIdentifier</key>
+   			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+   			<key>IOClass</key>
+   			<string>AppleUserHIDDevice</string>
+   			<key>IOProviderClass</key>
+   			<string>IOUSBHostInterface</string>
+   			<key>IOUserClass</key>
+   			<string>TouchScreenExtension</string> // 생성한 클래스 이름
+   			<key>IOUserServerName</key>
+   			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+   			<key>IOUserServerOneProcess</key>
+   			<true/>
+   			<key>PrimaryUsage</key>
+   			<integer>4</integer>
+   			<key>PrimaryUsagePage</key>
+   			<integer>13</integer>
+   			<key>ProductID</key>
+   			<integer>21781</integer>
+   			<key>Transport</key>
+   			<string>USB</string>
+   			<key>VendorID</key>
+   			<integer>1267</integer>
+   		</dict>
+   	</dict>
+   </dict>
+   </plist>
+   ```
+
+ * project TARGETS 확인
+![스크린샷 2025-04-18 오후 2 33 59](https://github.com/user-attachments/assets/72c635ec-27d2-4d1a-a5a5-3b4bf88ab6dc)
+
+*Frameworks 칸에 아래와 같이 .dext 파일이 들어가 있는 것 확인, 추가적으로 IOKit framework 설치
+![스크린샷 2025-04-18 오후 2 34 42](https://github.com/user-attachments/assets/88d645c5-7798-476f-8287-78fb36042f95)
+
+* Driver의 TARGETS도 확인 (DriverKit은 이미 추가되어 있으니 HIDDriverKit 설치)
+![스크린샷 2025-04-18 오후 2 37 30](https://github.com/user-attachments/assets/a9e34728-9b1d-442c-a89d-716aa67908da)
+
+* Signing & Capabilities 탭 누르고 
+![스크린샷 2025-04-18 오후 2 38 48](https://github.com/user-attachments/assets/f98a16bd-c530-4877-bc3b-235110955f13)
+
+* + Capability 버튼 누른다음 위의 3가지 모두 다 넣기
+![스크린샷 2025-04-18 오후 2 39 33](https://github.com/user-attachments/assets/b66874f1-3267-4506-b090-0531289d3515)
+
+
+#### 3. 프로젝트 빌드하지 말고 app으로 배포 (아카이브)
