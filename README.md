@@ -236,7 +236,7 @@
 
 
 ## 5. HIDManager 초기화 & 연결된 HID open & vendorID로 원하는 HID 감지
-    ```swift
+   ```swift
     private let targetVendorID = 1267 // 터치스크린의 vendorID
 
     private func initializeHIDManager() {
@@ -268,11 +268,11 @@
                }
            }
        }
-    ```
+```
 
 
 ## 6. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
-    ```swift
+   ```swift
     private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, sender: UnsafeMutableRawPointer?, value: IOHIDValue) {
         guard let context = context else { return }
         let monitor = Unmanaged<TouchHIDMonitor>.fromOpaque(context).takeUnretainedValue()
@@ -386,4 +386,4 @@
                 mouseCursorPosition: CGPoint(x: x, y: y),
                 mouseButton: .left)?.post(tap: .cghidEventTap)
     }
-    ```
+   ```
