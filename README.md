@@ -1,4 +1,4 @@
-## ⚙️ 터치스크린 연결 방법
+# ⚙️ 터치스크린 연결 방법
 1. XCode 프로젝트 macOS로 생성
 2. DriverKit 설치
 3. 프로젝트 빌드하지 말고 app으로 배포 (아카이브)
@@ -7,11 +7,11 @@
 6. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
 
 
-### 1.XCode 프로젝트 macOS로 생성
+## 1.XCode 프로젝트 macOS로 생성
 ![스크린샷 2025-04-18 오후 12 33 24](https://github.com/user-attachments/assets/d4acfe8b-f931-4e88-9c3f-c65b7f91342f)
 
 
-### 2.DriverKit 설치
+## 2.DriverKit 설치
 * File -> New -> Target
 
 ![스크린샷 2025-04-18 오후 12 04 38](https://github.com/user-attachments/assets/4c0a6b77-a5e1-4705-92e2-c252dda07c88)
@@ -175,7 +175,8 @@
 
 
 
-### 3. 프로젝트 빌드하지 말고 app으로 배포 (아카이브)
+## 3. 프로젝트 빌드하지 말고 app으로 배포 (아카이브)
+* ❗️빌드해서 테스트하면 IOHID 열리지 않기 때문에 꼭!!! 아카이브
 * 테스트용으로 아카이브 (Product -> Archive)
 ![스크린샷 2025-04-18 오후 2 44 19](https://github.com/user-attachments/assets/e189a208-1436-4db0-aac2-5e38aea250ca)
 
@@ -192,7 +193,7 @@
 
 
 
-### 4. 설치한 driver 사용 위해 system extension 권한 요청
+## 4. 설치한 driver 사용 위해 system extension 권한 요청
 * 권한 요청할 파일에
    ```swift
    import SystemExtensions
@@ -233,7 +234,8 @@
    }
    ```
 
-### 5. HIDManager 초기화 & 연결된 HID open & vendorID로 원하는 HID 감지
+
+## 5. HIDManager 초기화 & 연결된 HID open & vendorID로 원하는 HID 감지
     ```swift
     private let targetVendorID = 1267 // 터치스크린의 vendorID
 
@@ -268,7 +270,8 @@
        }
     ```
 
-### 6. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
+
+## 6. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
     ```swift
     private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, sender: UnsafeMutableRawPointer?, value: IOHIDValue) {
         guard let context = context else { return }
