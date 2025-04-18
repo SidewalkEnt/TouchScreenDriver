@@ -47,7 +47,7 @@
     ```
  * .cpp 파일을 아래와 같이 수정
 ```c
-   #include "TouchScreenExtension.h" // 생성한 file이름.h
+#include "TouchScreenExtension.h" // 생성한 file이름.h
 
 #include <os/log.h>
 #include <DriverKit/IOUserServer.h>
@@ -156,7 +156,7 @@ IMPL(TouchScreenExtension, Start)
  * project TARGETS 확인
 ![스크린샷 2025-04-18 오후 2 33 59](https://github.com/user-attachments/assets/72c635ec-27d2-4d1a-a5a5-3b4bf88ab6dc)
 
-*Frameworks 칸에 아래와 같이 .dext 파일이 들어가 있는 것 확인, 추가적으로 IOKit framework 설치
+* Frameworks 칸에 아래와 같이 .dext 파일이 들어가 있는 것 확인, 추가적으로 IOKit framework 설치
 ![스크린샷 2025-04-18 오후 2 34 42](https://github.com/user-attachments/assets/88d645c5-7798-476f-8287-78fb36042f95)
 
 * Driver의 TARGETS도 확인 (DriverKit은 이미 추가되어 있으니 HIDDriverKit 설치)
