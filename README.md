@@ -1,19 +1,19 @@
-### ⚙️ 터치스크린 연결 방법
+## ⚙️ 터치스크린 연결 방법
 1. XCode 프로젝트 macOS로 생성
 2. DriverKit 설치
 3. 프로젝트 빌드하지 말고 app으로 배포 (아카이브)
 4. 설치한 driver 사용 위해 system extension 권한 요청
-5. 권한 허용 이후 HIDManager 초기화
+5. HIDManager 초기화
 6. IOHIDManagerOpen (연결된 HID open)
 7. vendorID로 원하는 HID 감지
 8. callBack으로 오는 usage, usagePage, intValue 가지고 동작 처리
 
 
-#### 1.XCode 프로젝트 macOS로 생성
+### 1.XCode 프로젝트 macOS로 생성
 ![스크린샷 2025-04-18 오후 12 33 24](https://github.com/user-attachments/assets/d4acfe8b-f931-4e88-9c3f-c65b7f91342f)
 
 
-#### 2.DriverKit 설치
+### 2.DriverKit 설치
 * File -> New -> Target
 
 ![스크린샷 2025-04-18 오후 12 04 38](https://github.com/user-attachments/assets/4c0a6b77-a5e1-4705-92e2-c252dda07c88)
@@ -170,7 +170,8 @@
 ![스크린샷 2025-04-18 오후 2 39 33](https://github.com/user-attachments/assets/b66874f1-3267-4506-b090-0531289d3515)
 
 
-#### 3. 프로젝트 빌드하지 말고 app으로 배포 (아카이브)
+
+### 3. 프로젝트 빌드하지 말고 app으로 배포 (아카이브)
 * 테스트용으로 아카이브 (Product -> Archive)
 ![스크린샷 2025-04-18 오후 2 44 19](https://github.com/user-attachments/assets/e189a208-1436-4db0-aac2-5e38aea250ca)
 
@@ -185,3 +186,47 @@
 
 * Applications에서 앱 열기 (open /Applications/TouchScreen.app)
 
+
+
+### 4. 설치한 driver 사용 위해 system extension 권한 요청
+* 권한 요청할 파일에
+   ```swift
+   import SystemExtensions
+   ```
+
+* 권한 허용 요청 코드 작성
+   ```swift
+     let identifier = "com.naver.heejoo-byun.TouchScreen.TouchScreenExtension"
+     let request = OSSystemExtensionRequest.activationRequest(forExtensionWithIdentifier: identifier,
+                                                                 queue: .main)
+     request.delegate = self
+     OSSystemExtensionManager.shared.submitRequest(request)
+   ```
+
+* delegate 위임하고 함수 작성
+   ```swift
+   extension TouchHIDMonitor: OSSystemExtensionRequestDelegate {
+       func request(_ request: OSSystemExtensionRequest, actionForReplacingExtension existing: OSSystemExtensionProperties, withExtension ext: OSSystemExtensionProperties) -> OSSystemExtensionRequest.ReplacementAction {
+           return .replace
+       }
+       
+   
+       func requestNeedsUserApproval(_ request: OSSystemExtensionRequest) {
+           print("🔒 System extension needs user approval")
+           logMessage = "🔒 System extension needs user approval"
+       }
+       
+       func request(_ request: OSSystemExtensionRequest, didFinishWithResult result: OSSystemExtensionRequest.Result) {
+           print("✅ System Extension activated: \(result)")
+           logMessage = "✅ System Extension activated: \(result)"
+           initializeHIDManager() // 이어서 작성할 HID 초기화 함수
+       }
+       
+       func request(_ request: OSSystemExtensionRequest, didFailWithError error: any Error) {
+           print("❌ Failed to activate extension: \(error.localizedDescription)")
+           logMessage = "❌ Failed to activate extension: \(error.localizedDescription)"
+       }
+   }
+   ```
+
+### 5. HIDManager 초기화
