@@ -46,77 +46,78 @@
     #endif /* TouchScreenExtension_h */
     ```
  * .cpp 파일을 아래와 같이 수정
-```c
-#include "TouchScreenExtension.h" // 생성한 file이름.h
-
-#include <os/log.h>
-#include <DriverKit/IOUserServer.h>
-#include <DriverKit/IOLib.h>
-#include <DriverKit/OSCollections.h>
-
-struct TouchScreenExtension_IVars // 생성한 file이름_IVars
-{
-    OSArray *elements;
-    
-    struct {
-        OSArray *collections;
-    } digitizer;
-};
-
-#define _elements   ivars->elements
-#define _digitizer  ivars->digitizer
-
-bool TouchScreenExtension::init()
-{
-    os_log(OS_LOG_DEFAULT, "TouchScreenExtension init");
-
-    if (!super::init()) {
-        return false;
-    }
-    
-    ivars = IONewZero(TouchScreenExtension_IVars, 1);
-    if (!ivars) {
-        return false;
-    }
-    
-exit:
-    return true;
-}
-
-void TouchScreenExtension::free()
-{
-    if (ivars) {
-        OSSafeReleaseNULL(_elements);
-        OSSafeReleaseNULL(_digitizer.collections);
-    }
-    
-    IOSafeDeleteNULL(ivars, TouchScreenExtension_IVars, 1);
-    super::free();
-}
-
-kern_return_t
-IMPL(TouchScreenExtension, Start)
-{
-    kern_return_t ret;
-    
-    ret = Start(provider, SUPERDISPATCH);
-    if (ret != kIOReturnSuccess) {
-        Stop(provider, SUPERDISPATCH);
-        return ret;
-    }
-
-    os_log(OS_LOG_DEFAULT, "Hello World");
-    
-    RegisterService();
-    
-    return ret;
-}
-```
+   ```c
+   #include "TouchScreenExtension.h" // 생성한 file이름.h
+   
+   #include <os/log.h>
+   #include <DriverKit/IOUserServer.h>
+   #include <DriverKit/IOLib.h>
+   #include <DriverKit/OSCollections.h>
+   
+   struct TouchScreenExtension_IVars // 생성한 file이름_IVars
+   {
+       OSArray *elements;
+       
+       struct {
+           OSArray *collections;
+       } digitizer;
+   };
+   
+   #define _elements   ivars->elements
+   #define _digitizer  ivars->digitizer
+   
+   bool TouchScreenExtension::init()
+   {
+       os_log(OS_LOG_DEFAULT, "TouchScreenExtension init");
+   
+       if (!super::init()) {
+           return false;
+       }
+       
+       ivars = IONewZero(TouchScreenExtension_IVars, 1);
+       if (!ivars) {
+           return false;
+       }
+       
+   exit:
+       return true;
+   }
+   
+   void TouchScreenExtension::free()
+   {
+       if (ivars) {
+           OSSafeReleaseNULL(_elements);
+           OSSafeReleaseNULL(_digitizer.collections);
+       }
+       
+       IOSafeDeleteNULL(ivars, TouchScreenExtension_IVars, 1);
+       super::free();
+   }
+   
+   kern_return_t
+   IMPL(TouchScreenExtension, Start)
+   {
+       kern_return_t ret;
+       
+       ret = Start(provider, SUPERDISPATCH);
+       if (ret != kIOReturnSuccess) {
+           Stop(provider, SUPERDISPATCH);
+           return ret;
+       }
+   
+       os_log(OS_LOG_DEFAULT, "Hello World");
+       
+       RegisterService();
+       
+       return ret;
+   }
+   ```
 
  * .plist 파일 sourceCode로 연다음, 아래 코드 참고하여 수정
+
 ![스크린샷 2025-04-18 오후 2 30 10](https://github.com/user-attachments/assets/d85e6dce-6c07-4346-b2e5-a1b01eab0562) 
 
-    ```swift
+   ```swift
    <?xml version="1.0" encoding="UTF-8"?>
    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
    <plist version="1.0">
