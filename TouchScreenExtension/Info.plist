@@ -6,8 +6,6 @@
 	<dict>
 		<key>TouchScreenExtension</key>
 		<dict>
-			<key>IOUserServerOneProcess</key>
-			<true/>
 			<key>CFBundleIdentifier</key>
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>IOClass</key>
@@ -18,16 +16,18 @@
 			<string>TouchScreenExtension</string>
 			<key>IOUserServerName</key>
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-			<key>ProductID</key>
-			<integer>21781</integer>
-			<key>VendorID</key>
-			<integer>1267</integer>
-			<key>Transport</key>
-			<string>USB</string>
-			<key>PrimaryUsagePage</key>
-			<integer>13</integer>
+			<key>IOUserServerOneProcess</key>
+			<true/>
 			<key>PrimaryUsage</key>
 			<integer>4</integer>
+			<key>PrimaryUsagePage</key>
+			<integer>13</integer>
+			<key>ProductID</key>
+			<integer>21781</integer>
+			<key>Transport</key>
+			<string>USB</string>
+			<key>VendorID</key>
+			<integer>1267</integer>
 		</dict>
 	</dict>
 </dict>

@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		2A2C5A052DA79A1B007DF98E /* DriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A8753F12DA647FA009763AB /* DriverKit.framework */; };
 		2A2C5A082DA79A1C007DF98E /* HIDDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A26E90E2DA792B2003A859C /* HIDDriverKit.framework */; };
-		2A8753FB2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2A8753FB2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.TouchScreenExtension.dext in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.TouchScreenExtension.dext */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2AE8CC5E2DACFCD2005D6208 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AE8CC5D2DACFCD2005D6208 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,7 +30,7 @@
 			dstPath = "$(SYSTEM_EXTENSIONS_FOLDER_PATH)";
 			dstSubfolderSpec = 16;
 			files = (
-				2A8753FB2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext in Embed System Extensions */,
+				2A8753FB2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.TouchScreenExtension.dext in Embed System Extensions */,
 			);
 			name = "Embed System Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -49,7 +49,7 @@
 
 /* Begin PBXFileReference section */
 		2A26E90E2DA792B2003A859C /* HIDDriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HIDDriverKit.framework; path = Platforms/DriverKit.platform/Developer/SDKs/DriverKit24.4.sdk/System/DriverKit/System/Library/Frameworks/HIDDriverKit.framework; sourceTree = DEVELOPER_DIR; };
-		2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext */ = {isa = PBXFileReference; explicitFileType = "wrapper.driver-extension"; includeInIndex = 0; path = "com.naver.heejoo-byun.TouchScreen.driver.dext"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.TouchScreenExtension.dext */ = {isa = PBXFileReference; explicitFileType = "wrapper.driver-extension"; includeInIndex = 0; path = "com.naver.heejoo-byun.TouchScreen.TouchScreenExtension.dext"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A8753F12DA647FA009763AB /* DriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DriverKit.framework; path = System/Library/Frameworks/DriverKit.framework; sourceTree = SDKROOT; };
 		2A94C34E2DA4FE6700D31E16 /* TouchScreen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchScreen.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AE8CC5D2DACFCD2005D6208 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -136,7 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				2A94C34E2DA4FE6700D31E16 /* TouchScreen.app */,
-				2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext */,
+				2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.TouchScreenExtension.dext */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -174,7 +174,7 @@
 			packageProductDependencies = (
 			);
 			productName = TouchScreenExtension;
-			productReference = 2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.driver.dext */;
+			productReference = 2A8753EF2DA647FA009763AB /* com.naver.heejoo-byun.TouchScreen.TouchScreenExtension.dext */;
 			productType = "com.apple.product-type.driver-extension";
 		};
 		2A94C34D2DA4FE6700D31E16 /* TouchScreen */ = {
@@ -301,7 +301,7 @@
 				INFOPLIST_FILE = TouchScreenExtension/Info.plist;
 				INFOPLIST_KEY_OSBundleUsageDescription = "";
 				MARKETING_VERSION = 2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.naver.heejoo-byun.TouchScreen.driver";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.naver.heejoo-byun.TouchScreen.TouchScreenExtension";
 				PRODUCT_NAME = "$(inherited)";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = driverkit;
@@ -330,7 +330,7 @@
 				INFOPLIST_KEY_OSBundleUsageDescription = "";
 				MARKETING_VERSION = 2.0;
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.naver.heejoo-byun.TouchScreen.driver";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.naver.heejoo-byun.TouchScreen.TouchScreenExtension";
 				PRODUCT_NAME = "$(inherited)";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = driverkit;

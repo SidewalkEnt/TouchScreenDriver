@@ -31,7 +31,7 @@ final class TouchHIDMonitor: NSObject, ObservableObject {
     }
 
     private func activateDriverExtension() {
-        let identifier = "com.naver.heejoo-byun.TouchScreen.driver"
+        let identifier = "com.naver.heejoo-byun.TouchScreen.TouchScreenExtension"
         let request = OSSystemExtensionRequest.activationRequest(forExtensionWithIdentifier: identifier,
                                                                  queue: .main)
         request.delegate = self
