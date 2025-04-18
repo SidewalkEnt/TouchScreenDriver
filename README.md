@@ -46,7 +46,7 @@
     ```
 
  *.cpp 파일을 아래와 같이 수정
-    ```c
+```c
    #include "TouchScreenExtension.h" // 생성한 file이름.h
 
 #include <os/log.h>
@@ -111,5 +111,4 @@ IMPL(TouchScreenExtension, Start)
     
     return ret;
 }
-
-    ```
+```
