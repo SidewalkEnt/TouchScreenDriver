@@ -77,6 +77,8 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
     let usagePage = IOHIDElementGetUsagePage(element)
     let intValue = IOHIDValueGetIntegerValue(value)
             
+    CGDisplayHideCursor(CGMainDisplayID()) // 포그라운드 상태일 때만 제대로 숨겨짐
+    
     if usagePage == kHIDPage_Digitizer {
         if usage == kHIDUsage_Dig_TipSwitch {
             DispatchQueue.main.async {
