@@ -118,11 +118,11 @@ private func inputCallback(context: UnsafeMutableRawPointer?, result: IOReturn, 
         }
         
         if let x = monitor.currentX, let y = monitor.currentY {
-            let (convertedX, counvertedY) = convertPosition(xRaw: x, yRaw: y)
-            onDraggingEvent(x: convertedX, y: counvertedY)
+            let (convertedX, convertedY) = convertPosition(xRaw: x, yRaw: y)
+            onMoveEvent(x: convertedX, y: convertedY)
             
             DispatchQueue.main.async {
-                monitor.logMessage = "📍Touch at (X: \(Int(convertedX)), Y: \(Int(counvertedY)))"
+                monitor.logMessage = "📍Touch at (X: \(Int(convertedX)), Y: \(Int(convertedY)))"
             }
         }
     }
@@ -173,14 +173,14 @@ private func onClickEvent(x: CGFloat, y: CGFloat) {
     CGEvent(mouseEventSource: nil,
             mouseType: .leftMouseDown,
             mouseCursorPosition: CGPoint(x: x, y: y),
-            mouseButton: .left)?.post(tap: CGEventTapLocation.cghidEventTap)
+            mouseButton: .left)?.post(tap: .cghidEventTap)
 }
 
 private func onClickEndEvent(x: CGFloat, y: CGFloat) {
     CGEvent(mouseEventSource: nil,
             mouseType: .leftMouseUp,
             mouseCursorPosition: CGPoint(x: x, y: y),
-            mouseButton: .left)?.post(tap: CGEventTapLocation.cghidEventTap)
+            mouseButton: .left)?.post(tap: .cghidEventTap)
 }
 
 extension TouchHIDMonitor: OSSystemExtensionRequestDelegate {
